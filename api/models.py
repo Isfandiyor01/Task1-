@@ -11,6 +11,19 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
 
+    # Add these two lines to prevent the clash
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='custom_user_groups', # Unique name
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='custom_user_permissions', # Unique name
+        blank=True
+    )
+    
+
 class Book(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)

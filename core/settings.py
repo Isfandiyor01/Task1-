@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'api',
 ]
 
+AUTH_USER_MODEL = 'api.User'
 # Add this for Swagger and Auth configuration
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
