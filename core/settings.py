@@ -158,3 +158,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+# 1. Add your Railway URL to the trusted origins
+# Note: Do NOT include the trailing slash at the end of the URL
+CSRF_TRUSTED_ORIGINS = [
+    'https://task1-production-3ab1.up.railway.app',
+]
+
+# 2. Since you're using Railway, it's also good practice to ensure 
+# Django knows it's behind a proxy (Railway uses one)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# 3. Double check your CORS settings if you are using Swagger/Flutter
+CORS_ALLOWED_ORIGINS = [
+    'https://task1-production-3ab1.up.railway.app',
+]
