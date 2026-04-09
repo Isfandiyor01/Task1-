@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from datetime import timedelta
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class User(AbstractUser):
     ROLE_CHOICES = (
@@ -22,7 +23,6 @@ class User(AbstractUser):
         related_name='custom_user_permissions', # Unique name
         blank=True
     )
-    
 
 class Book(models.Model):
     title = models.CharField(max_length=255)
@@ -33,7 +33,7 @@ class Book(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    raken_at = models.DateTimeField(auto_now_add=True)
+    taken_at = models.DateTimeField(auto_now_add=True)
     return_deadline = models.DateTimeField()
     actual_return_date = models.DateTimeField(null=True, blank=True)
     fine_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -43,8 +43,20 @@ class Order(models.Model):
             overdue_days = (self.actual_return_date - self.return_deadline).days
             # 1% kuniga kechikish uchun
             self.fine_amount = ( overdue_days * self.book.daily_price ) * 0.01
-            self.find_amount = fine
             self.save()
         else:
             self.fine_amount = 0.00
         self.save()
+
+
+class Reservation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    reserved_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+
+class Review(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
